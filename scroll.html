@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src = "./jquery.js"></script>
+    <script type="text/javascript">
+$(document).ready(function (){
+/*=============
+Author:Gino
+Blog:http://www.cnblogs.com/ginowang42
+Thanks：@Blue--http://www.zhinengshe.com/video.html#1
+Name:jQuery插件图片左右无缝滚动
+Arguments:
+    @leftBtn:向左滚动按钮DOM引用
+    @rightBtn:向右滚动按钮DOM引用
+    @speed：滚动速度（每次滚动像素数）
+CSS keyed Attribute:
+    #noSeamScroll{position:relative;overflow:hidden;}
+    #noSeamScroll ul{position:absolute;}    
+    #noSeamScroll ul li {float:left;}    
+===============*/
+    $.fn.extend({noSeamScroll:function (leftBtn,rightBtn,speed){
+        var timeFlag = speed = speed || 4;;
+        var timer = null;
+        var _this = this;//把this重新保存在一个私有变量里面，以防止setInterval误把this指向了window
+        this.oUl = $("ul",this);
+        this.oUl.html(this.oUl.html() + this.oUl.html());//把li复制一份
+        this.oLis = $("ul li",this);//之后再变量保存li的全部节点
+        this.oUl.width(this.oLis.eq(0).outerWidth(true)*this.oLis.length + "px");
+        var fnMove = function (){
+            $("ul",_this).css("left",function (){
+                if ($(this).position().left > 0){//这里的this指的是$("ul",element)
+                    return -$(this).outerWidth(true)/2 + "px";
+                }
+                if ($(this).position().left < -$(this).outerWidth(true)/2 ){
+                    return "0px";
+                }
+                return $(this).position().left  + timeFlag + "px";
+            })
+        }
+    
+        timer = setInterval(fnMove,30);
+        
+        this.mouseover(function () {clearInterval(timer);});
+        this.mouseout(function () {timer = setInterval(fnMove,30)});
+        
+        leftBtn.click(function (){
+            clearInterval(timer);
+            timeFlag = -speed;
+            timer = setInterval(fnMove,30);
+        })
+        rightBtn.click(function (){
+            clearInterval(timer);
+            timeFlag = speed;
+            timer = setInterval(fnMove,30);
+        })
+
+    }
+    });
+
+    //test
+    $("#noSeamScroll").noSeamScroll($("#leftArr"),$("#rightArr"),2);
+    
+    
+})
+
+    </script>
+    <style type="text/css">
+    *{margin:0;padding:0;}
+    #noSeamScroll{width:752px;height:500px;margin:20px auto;position:relative;overflow:hidden;}
+    #noSeamScroll ul{position:absolute;list-style:none;}    
+    #noSeamScroll ul li {float:left;width:178px;height:108px;margin-right:10px;}
+    
+    
+    </style>
+</head>
+<body>
+<a href="javascript:;" id="leftArr">向左移动</a>
+<a href="javascript:;" id="rightArr">向右移动</a>
+    <div id = "noSeamScroll">
+        <ul>
+            <li><img src="fold.png" alt="" /></li>
+            <li><img src="fold.png" alt="" /></li>
+            <li><img src="fold.png" alt="" /></li>
+            <li><img src="fold.png" alt="" /></li>
+            
+        </ul>
+    </div>
+</body>
+</html>
