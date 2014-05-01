@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>MyLife</title>
+	<script src='./jquery.js'></script>
+	<script src='./ajaxfileupload.js'></script>
+</head>
+<script>
+    function showUploadImg(data)
+    {
+    	img = "<div class='img'><img src='"+data.msg+"' width='200px' height='200px'></img></div>";
+    	//$('.2013').append(text);
+    	if($("."+data.year).length>0){
+    		//判断月份是否存在
+    		if($("."+data.month).length==0){
+    			monNode = "<div class='month > <h3>"+data.month+"</h3></div>";
+    			$("."+data.year).append(monNode);
+    		}
+    	}
+    	else
+    	{
+    		yearNode = "<div class='year "+data.year+"''><h2>"+data.year+"年<h2></div>";
+    		monNode = "<div class='month "+data.month+"'> <h3>"+data.month+"月</h3></div>";
+    		$('#content_show').append(yearNode);
+    		$('.'+data.year).append(monNode);
+    	}
+    	$('.'+data.year+' .'+data.month).append(img);
+    }
+
+	function ajaxFileUpload()
+	{
+		$("#loading").show();
+		/*.ajaxStart(function(){
+			$(this).show();
+		})
+		.ajaxComplete(function(){
+			$(this).hide();
+		});*/
+
+		$.ajaxFileUpload
+		(
+			{
+				url:'./doajaxfileupload.php',
+				secureuri:false,
+				fileElementId:'fileToUpload',
+				dataType: 'json',
+				data:{name:'logan', id:'id'},
+				success: function (data, status)
+				{
+					$("#loading").hide();
+					if(typeof(data.error) != 'undefined')
+					{
+						if(data.error != '')
+						{
+							alert(data.error);
+						}else
+						{
+							showUploadImg(data);
+						}
+					}
+				},
+				error: function (data, status, e)
+				{
+					$("#loading").hide();
+					alert(e);
+				}
+			}
+		)
+		return false;
+	}
+</script>
+<style>
+body{
+	background-color: #e9e7ef;
+}
+#menu_area{
+	float: left;
+	width:200px;
+	height:600px;
+	border-radius: 2px;
+	margin:5px;
+	background-color: #bacac6;
+}
+#content_show{
+	width:1100px;
+	height:100%;
+	float: left;
+	margin:8px;
+	background-color: #f3f9f1;
+}
+.img{
+	margin: 10px;
+	border-radius: 5px;
+	box-shadow: 1px 2px 0px #888888;
+	float:left;
+}
+.year{
+	float: left;
+	margin:20px;
+}
+</style>
+<body>
+<div id='menu_area'>
+	<h2>上传文件<h2>
+	<div id="loading" style="display:none;"><img src="loading.gif" ></div>
+	<form name="form" action="" method="POST" enctype="multipart/form-data">
+	  <input id="fileToUpload" type="file" size="45" name="fileToUpload" class="input">
+	  <button class="button" id="buttonUpload" onclick="return ajaxFileUpload();">上传</button>
+	</form>
+</div>
+<div id="content_show">
+</div>
+</body>
+</html>
